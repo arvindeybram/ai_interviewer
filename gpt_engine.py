@@ -1,6 +1,7 @@
+import os
 import openai
 
-openai.api_key = "your_openai_api_key"
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def ask_gpt(user_input, history=[]):
     messages = [{"role": "system", "content": "You are a technical interviewer conducting a mock interview."}]

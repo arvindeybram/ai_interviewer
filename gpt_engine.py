@@ -5,7 +5,9 @@ print(os.getenv("OPENAI_API_KEY"))
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
-def ask_gpt(user_input, history=[]):
+def ask_gpt(user_input, history=None):
+    if history is None:
+        history = []
     messages = [{"role": "system", "content": "You are a technical interviewer conducting a mock interview."}]
 
     for h in history:

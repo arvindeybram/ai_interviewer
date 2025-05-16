@@ -1,7 +1,6 @@
-from utils.db import get_db_connection
 import streamlit as st
-from speech_utils import speak
-from gpt_engine import ask_gpt
+from utils.speech_utils import speak
+from utils.db import get_db_connection
 
 conn = get_db_connection()
 
@@ -22,48 +21,39 @@ if "current_question" not in st.session_state:
     st.session_state.current_question = None
 
 if interview_type == "Coding":
-    if not st.session_state.question_asked:
+    if not st.session_state.get("question_asked"):
         if st.button("Start Coding Interview"):
             if conn:
                 cursor = conn.cursor(dictionary=True)
-                query = """
-                        SELECT title, difficulty, url 
-                        FROM questions 
-                        WHERE company_tag = %s 
-                        ORDER BY RAND() LIMIT 1
-                    """
-                cursor.execute(query, (company.lower(),))
+                query = f"""
+                    SELECT prompt 
+                    FROM questions 
+                    WHERE company_tag = '{company.lower()}' 
+                    ORDER BY RAND() LIMIT 1
+                """
+                cursor.execute(query)
                 question = cursor.fetchone()
                 cursor.close()
 
-                if question:
-                    title = question["title"]
-                    prompt = ask_gpt(
-                        f"""You're a senior software engineer conducting interviews.
-                            Take the following LeetCode question title and rephrase it into a full, 
-                            clear coding interview question that can be asked aloud. Title: "{title}" """)
-                    st.session_state.current_question = {
-                        "title": title,
-                        "difficulty": question["difficulty"],
-                        "url": question["url"],
-                        "prompt": prompt
-                    }
-                    speak(prompt)  # optional
+                if question and question["prompt"]:
+                    st.session_state.current_question = question["prompt"]
                     st.session_state.question_asked = True
+                    speak("Please read the question and proceed when you are ready.")
                 else:
                     st.warning("No questions found for this company.")
-                    conn.close()
 
-                    # Display AI-generated prompt and notepad
-                    if st.session_state.question_asked and st.session_state.current_question:
-                        q = st.session_state.current_question
-                    st.markdown(f"### 💻 Coding Interview Question from {company}")
-                    st.write(f"🧠 {q['prompt']}")
-                    st.write(f"**Difficulty:** {q['difficulty']}")
-                    st.write(f"**URL:** [Click here]({q['url']})")
+    if st.session_state.get("question_asked") and st.session_state.get("current_question"):
+        # Show only the prompt
+        st.markdown("### 💻 Coding Interview Question")
+        st.write(st.session_state.current_question)
 
-                    st.markdown("### 📝 Your Answer:")
-                    user_code = st.text_area("Write your code here:", height=300)
+        # Text area for the candidate to type their solution
+        st.markdown("### 📝 Your Answer:")
+        user_code = st.text_area("Write your code here:", height=300)
 
-                    if st.button("Submit Answer"):
-                        st.success("✅ Your answer has been submitted.")
+        if st.button("Reset Question"):
+            st.session_state.question_asked = False
+            st.session_state.current_question = None
+
+        elif st.button("Submit Answer"):
+            st.success("✅ Your answer has been submitted.")

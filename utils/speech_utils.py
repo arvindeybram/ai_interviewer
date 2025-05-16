@@ -5,6 +5,7 @@ import pyttsx3
 
 model = whisper.load_model("base")  # Options: "tiny", "base", "small", "medium", "large"
 
+
 def record_audio(filename="user_input.wav", duration=5, fs=44100):
     try:
         print("Recording...")
@@ -18,6 +19,7 @@ def record_audio(filename="user_input.wav", duration=5, fs=44100):
         print(f"[ERROR] Failed to record audio: {e}")
         return None
 
+
 def transcribe_audio(file_path="user_input.wav"):
     if file_path is None:
         return "No audio file to transcribe."
@@ -28,6 +30,7 @@ def transcribe_audio(file_path="user_input.wav"):
     except Exception as e:
         return f"[ERROR] Transcription failed: {e}"
 
+
 def speak(text):
     try:
         engine = pyttsx3.init()
@@ -35,4 +38,3 @@ def speak(text):
         engine.runAndWait()
     except Exception as e:
         print(f"[ERROR] Speech synthesis failed: {e}")
-

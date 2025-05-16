@@ -1,21 +1,23 @@
 import os
-import openai
+from openai import OpenAI
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+print(os.getenv("OPENAI_API_KEY"))
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
 
 def ask_gpt(user_input, history=[]):
     messages = [{"role": "system", "content": "You are a technical interviewer conducting a mock interview."}]
+
     for h in history:
         messages.append({"role": "user", "content": h['user']})
         messages.append({"role": "assistant", "content": h['ai']})
 
     messages.append({"role": "user", "content": user_input})
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4",  # Or "gpt-3.5-turbo"
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",  # or "gpt-3.5-turbo"
         messages=messages
     )
 
-    reply = response['choices'][0]['message']['content']
+    reply = response.choices[0].message.content
     return reply
-

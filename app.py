@@ -4,13 +4,13 @@ from gpt_engine import ask_gpt
 
 st.set_page_config(page_title="AI Mock Interviewer", layout="centered")
 
-st.title("🎤 AI Mock Interviewer (Voice-Based)")
+st.title("🎤 AI Mock Interviewer")
 st.markdown("Ask your interview questions via voice. The AI will respond with voice as well.")
 
 if "history" not in st.session_state:
     st.session_state.history = []
 
-duration = st.slider("Recording duration (seconds)", 3, 10, 5)
+duration = 5
 
 if st.button("Start Interview Round"):
     filename = record_audio(duration=duration)

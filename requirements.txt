@@ -1,8 +1,9 @@
 --find-links wheels
-pyaudio
 openai
 streamlit
 whisper
 pyttsx3
-sounddevice
 scipy
+sounddevice
+pyaudio
+streamlit-ace

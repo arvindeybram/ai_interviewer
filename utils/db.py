@@ -2,6 +2,8 @@ import mysql.connector
 from mysql.connector import Error
 import streamlit as st
 
+
+@st.cache_resource
 def get_db_connection():
     try:
         connection = mysql.connector.connect(
